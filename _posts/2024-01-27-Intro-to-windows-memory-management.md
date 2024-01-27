@@ -18,9 +18,10 @@ Refer to the image below taken from “Windows Internals 7th edition – Part 1�
 
 Pages in a process’s virtual address space can exist in one of three states:
 
-    Free: These pages are not in use (neither committed nor reserved) and are inaccessible to the process. They stand ready for reservation, commitment, or both. Accessing a free page may trigger an access violation exception.
-    Reserved: These pages are earmarked for future use. Their address range is off-limits to other allocation functions, and they lack physical storage, making them inaccessible until they are committed.
-    Committed: These pages have been allocated memory from the total available RAM and paging files. Accessible and governed by specific memory protection constants, these pages are only loaded into physical memory when first read or written to. Upon process termination, the storage for these pages is released.
+- Free: These pages are not in use (neither committed nor reserved) and are inaccessible to the process. They stand ready for reservation, commitment, or both. Accessing a free page may trigger an access violation exception.
+-     Reserved: These pages are earmarked for future use. Their address range is off-limits to other allocation functions, and they lack physical storage, making them inaccessible until they are committed.
+-     Committed: These pages have been allocated memory from the total available RAM and paging files. Accessible and governed by specific memory protection constants, these pages are only loaded into physical memory when first read or written to. Upon process termination, the storage for these pages is released.
+
 
 ### Setting Page Protection Options
 
@@ -34,8 +35,9 @@ Once pages are committed, they must be assigned protection settings. The availab
 
 Modern operating systems, including Windows, incorporate various memory protection mechanisms to counter exploits and attacks, essential for malware development and debugging:
 
-    Data Execution Prevention (DEP): From Windows XP and Server 2003 onwards, DEP prevents code execution in non-executable memory regions, like those set to PAGE_READONLY.
-    Address Space Layout Randomization (ASLR): ASLR hinders the exploitation of memory corruption vulnerabilities by randomizing the address space locations of critical process components, such as the executable’s base and the positions of the stack, heap, and libraries.
+ - Data Execution Prevention (DEP): From Windows XP and Server 2003 onwards, DEP prevents code execution in non-executable memory regions, like those set to PAGE_READONLY.
+-     Address Space Layout Randomization (ASLR): ASLR hinders the exploitation of memory corruption vulnerabilities by randomizing the address space locations of critical process components, such as the executable’s base and the positions of the stack, heap, and libraries.
+
 
 ### Differences in x86 and x64 Memory Spaces
 
@@ -48,15 +50,15 @@ The following code snippets illustrate various approaches to memory allocation i
 
 // Method 1 - Using malloc()
 
-PVOID pAddress = malloc(100);
+    PVOID pAddress = malloc(100);
 
 // Method 2 - Using HeapAlloc()
 
-PVOID pAddress = HeapAlloc(GetProcessHeap(), 0, 100);
+    PVOID pAddress = HeapAlloc(GetProcessHeap(), 0, 100);
 
 // Method 3 - Using LocalAlloc()
 
-PVOID pAddress = LocalAlloc(LPTR, 100);
+    PVOID pAddress = LocalAlloc(LPTR, 100);
 
 Each memory allocation function returns the base address, a pointer to the start of the allocated memory block. Depending on the assigned protection, various operations can be performed using this pointer.
 
@@ -72,11 +74,11 @@ Note: Allocated memory may initially be empty or contain random data. Some alloc
 
 Following allocation, writing to the memory buffer is a common next step. For instance:
 
-PVOID pAddress = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 100);
+    PVOID pAddress = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 100);
 
-CHAR* cString = "Malware is fun";
+    CHAR* cString = "Malware is fun";
 
-memcpy(pAddress, cString, strlen(cString));
+    memcpy(pAddress, cString, strlen(cString));
 
 Here, HEAP_ZERO_MEMORY in HeapAlloc ensures the memory is zero-initialized before the string is copied using memcpy. The final parameter in memcpy specifies the copy length. Re-examine the buffer to confirm successful data writing.
 ![image-3.png]({{site.baseurl}}/_posts/image-3.png)
@@ -98,28 +100,28 @@ That’s the basics of it. You now know how to allocate, write to and free memor
 
 ###  Code used in this post:
 
-#include <Windows.h>
-#include <stdio.h>
+    #include <Windows.h>
+    #include <stdio.h>
 
 
-int main() {
-	PVOID pAddress = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 100);
-	printf("[+] Base address of allocated memory: 0x%p \n", pAddress);
+    int main() {
+        PVOID pAddress = HeapAlloc(GetProcessHeap(), HEAP_ZERO_MEMORY, 100);
+        printf("[+] Base address of allocated memory: 0x%p \n", pAddress);
 
-	CHAR* cString = " Malware is fun";
-	printf("Inserting data in memory...\n");
-	memcpy(pAddress, cString, strlen(cString));
-	printf("[+] Memory of pAddress holds: %s\n", (char*)pAddress);
+        CHAR* cString = " Malware is fun";
+        printf("Inserting data in memory...\n");
+        memcpy(pAddress, cString, strlen(cString));
+        printf("[+] Memory of pAddress holds: %s\n", (char*)pAddress);
 
-	printf("[+] Let's free up the memory!\n");
-	HeapFree(GetProcessHeap(), 0, pAddress);
+        printf("[+] Let's free up the memory!\n");
+        HeapFree(GetProcessHeap(), 0, pAddress);
 
-	if (pAddress != NULL) {
-		printf("[+] Memory should be freed. New content: %s\n", (char*)pAddress);
-	}
-	else {
-		printf("[+] Memory of pAddress is empty\n");
-	}
-	getchar();
-	return 0;
- }
+        if (pAddress != NULL) {
+            printf("[+] Memory should be freed. New content: %s\n", (char*)pAddress);
+        }
+        else {
+            printf("[+] Memory of pAddress is empty\n");
+        }
+        getchar();
+        return 0;
+     }
