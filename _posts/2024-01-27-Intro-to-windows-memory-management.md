@@ -1,5 +1,5 @@
 ---
-published: false
+published: true
 ---
 # Windows Memory Management (MalDev2)
 
