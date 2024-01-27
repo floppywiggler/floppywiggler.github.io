@@ -99,7 +99,7 @@ That’s the basics of it. You now know how to allocate, write to and free memor
 
 
 ###  Code used in this post:
-
+```python
     #include <Windows.h>
     #include <stdio.h>
 
@@ -125,3 +125,4 @@ That’s the basics of it. You now know how to allocate, write to and free memor
         getchar();
         return 0;
      }
+```
