@@ -1,7 +1,6 @@
 ---
 layout: post
 title:  "Windows Processes and their components"
-tags: "Windows internals"
 ---
 # Exploring Windows Processes
 
@@ -104,3 +103,19 @@ Windows API for Process and Thread Management
     OpenThread: Retrieves a handle to a thread using its thread ID.
 
 These APIs play a vital role in tasks like process suspension. Remember, it's essential to close handles with CloseHandle to prevent resource leaks.
+
+
+
+## Undocumented Structures
+
+When referencing the Windows documentation for a structure, one may encounter several reserved members within the structure. These reserved members are often presented as arrays of BYTE or PVOID data types. This practice is implemented by Microsoft to maintain confidentiality and prevent users from understanding the structure to avoid modifications to these reserved members.
+
+However, we have to be able to work with these undocumented members. Therefore, you might be better of staying away from Microsoft's documentation and instead use other websites that have the full undocumented structure, which was likely derived through reverse engineering.
+
+[ProcessHackers header files](https://github.com/winsiderss/systeminformer/tree/master/phnt/include)
+[Vergilius Project is a fantastic source for kernel structures](https://www.vergiliusproject.com/)
+
+
+### Finding Reserved Members
+
+One way to determine what the PEB's reserved members hold is through the `!peb` command in WinDbg.
